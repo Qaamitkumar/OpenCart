@@ -786,3 +786,17 @@ Capabilities {browserName: chrome, platformName: windows}
 13:18:35.213  [main] INFO  testCases.TC001_AccountRegistrationTest - ***** Finished TC001_AccountRegistrationTest ***** 
 13:18:37.123  [main] INFO  testCases.TC002_LoginTest - ******* Statrting TC_002_LoginTest *******
 13:18:39.112  [main] INFO  testCases.TC002_LoginTest - ******* Finished TC_002_LoginTest *******
+12:13:00.717  [main] DEBUG org.testng.TestNG - suiteXmlPath: "D:\OpenCart\master.xml"
+12:21:42.839  [main] DEBUG org.testng.TestNG - suiteXmlPath: "D:\OpenCart\master.xml"
+12:54:59.036  [main] DEBUG org.testng.TestNG - suiteXmlPath: "D:\OpenCart\master.xml"
+12:58:44.838  [main] DEBUG org.testng.TestNG - suiteXmlPath: "D:\OpenCart\master.xml"
+13:03:54.742  [main] DEBUG org.testng.TestNG - suiteXmlPath: "D:\OpenCart\master.xml"
+13:03:58.726  [main] INFO  testCases.TC001_AccountRegistrationTest - ***** Starting TC001_AccountRegistrationTest ***** 
+13:03:58.814  [main] INFO  testCases.TC001_AccountRegistrationTest - Clicked on MyAccount Link 
+13:03:59.230  [main] INFO  testCases.TC001_AccountRegistrationTest - Clicked on Register Link
+13:03:59.231  [main] INFO  testCases.TC001_AccountRegistrationTest - Providing Customer Details...
+13:04:00.610  [main] INFO  testCases.TC001_AccountRegistrationTest - Validating expected message..
+13:04:00.652  [main] INFO  testCases.TC001_AccountRegistrationTest - ***** Finished TC001_AccountRegistrationTest ***** 
+13:04:02.388  [main] INFO  testCases.TC002_LoginTest - ******* Statrting TC_002_LoginTest *******
+13:04:03.982  [main] INFO  testCases.TC002_LoginTest - ******* Finished TC_002_LoginTest *******
+13:12:19.622  [main] DEBUG org.testng.TestNG - suiteXmlPath: "D:\OpenCart\master.xml"

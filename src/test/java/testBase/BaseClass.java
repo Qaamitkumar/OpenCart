@@ -1,7 +1,6 @@
 package testBase;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
@@ -23,128 +22,132 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class BaseClass {
-public static WebDriver driver;
-public Logger logger;  //log4j
-public Properties p;
-	
-    @BeforeClass(groups={"Sanity","Regression","master"})
-    @Parameters({"os","browser"})
-	public void setup(String os,String br) throws IOException
-	{
-    	
-    	//loading config.propeties file
-    	FileReader file= new FileReader("./src//test//resources//config.properties");
-    	p= new Properties();
-    	p.load(file);
-    	
-    	//logs
-    	logger = LogManager.getLogger(this.getClass());
-    	
-    	//running or launching browsers on selenium grid setup
-    	if(p.getProperty("execution_env").equalsIgnoreCase("remote"))
-    	{
-    		DesiredCapabilities capabilities = new DesiredCapabilities();
-    		//capabilities.setPlatform(Platform.WIN11);
-    		//capabilities.
-    		
-    		
-    		//os
-    		if(os.equalsIgnoreCase("windows"))
-    		{
-    			capabilities.setPlatform(Platform.WINDOWS);
-    		}
-    		else if(os.equalsIgnoreCase("mac"))
-    		{
-    			capabilities.setPlatform(Platform.MAC);
-    		}else if (os.equalsIgnoreCase("linux")) {
-    		    capabilities.setPlatform(Platform.LINUX);
-    		}else
-    		{
-    			System.out.println("No matching OS found");
-    			return;
-    		}
-    		
-    		//browser
-    		switch(br.toLowerCase())
-    		{
-    		case "chrome":capabilities.setBrowserName("chrome");break;
-    		case "edge":capabilities.setBrowserName("MicrosoftEdge");break;
-    		case "firefox":capabilities.setBrowserName("firefox");break;
-    		default:System.out.println("No matching browser");return;
-    		}
-    		
-    		driver =new RemoteWebDriver(new URL("http://192.168.1.10:4444/wd/hub"),capabilities);
-    	}
-    	
-    	
-    	//running test on local env
-    	
-    	
-    	if(p.getProperty("execution_env").equalsIgnoreCase("local"))
-    	{
-    		switch(br.toLowerCase()) 
-        	{
-        	   case "chrome":driver = new ChromeDriver(); break;
-        	   case "edge":driver = new EdgeDriver();break;
-        	   case "firefox":driver = new FirefoxDriver();break;
-        	   default:System.out.println("Invalid browser name...");return;
-        	   
-        	}
-    	}
-    	
-    	
-    	
-    	driver.manage().deleteAllCookies();
-    	driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-    	//driver.get("https://tutorialsninja.com/demo/");
-    	driver.get(p.getProperty("appURl")); ///reading URL from properties file
-    	driver.manage().window().maximize();
-	}
-    
-    @AfterClass(groups={"Sanity","Regression","master"})
-	public void tearDown()
-	{
-		driver.quit();
-	}
-    
+
+    public static WebDriver driver;
+    public Logger logger;
+    public Properties p;
+
+    @BeforeClass(groups = {"Sanity", "Regression", "master"})
+    @Parameters({"os", "browser"})
+    public void setup(String os, String br) throws IOException {
+
+        // Load config.properties
+        FileReader file = new FileReader("./src/test/resources/config.properties");
+        p = new Properties();
+        p.load(file);
+
+        // Log4j logger
+        logger = LogManager.getLogger(this.getClass());
+
+        String execEnv = p.getProperty("execution_env").toLowerCase();
+        String appUrl = p.getProperty("appURl");
+
+        System.out.println("Execution Environment: " + execEnv);
+        System.out.println("Target Browser: " + br);
+        System.out.println("Target OS: " + os);
+
+        if (execEnv.equals("remote")) {
+            // Set desired capabilities
+            DesiredCapabilities capabilities = new DesiredCapabilities();
+
+            // OS platform
+            switch (os.toLowerCase()) {
+                case "windows":
+                    capabilities.setPlatform(Platform.WINDOWS);
+                    break;
+                case "mac":
+                    capabilities.setPlatform(Platform.MAC);
+                    break;
+                case "linux":
+                    capabilities.setPlatform(Platform.LINUX);
+                    break;
+                default:
+                    System.out.println("Invalid OS specified in parameters.");
+                    return;
+            }
+
+            // Browser
+            switch (br.toLowerCase()) {
+                case "chrome":
+                    capabilities.setBrowserName("chrome");
+                    break;
+                case "firefox":
+                    capabilities.setBrowserName("firefox");
+                    break;
+                case "edge":
+                    capabilities.setBrowserName("MicrosoftEdge");
+                    break;
+                default:
+                    System.out.println("Invalid browser specified in parameters.");
+                    return;
+            }
+
+            // Connect to Selenium Grid
+            String gridUrl = p.getProperty("selenium_grid_url", "http://localhost:4444/wd/hub");
+            System.out.println("Connecting to Selenium Grid at: " + gridUrl);
+
+            driver = new RemoteWebDriver(new URL(gridUrl), capabilities);
+
+        } else if (execEnv.equals("local")) {
+            // Run tests locally
+            switch (br.toLowerCase()) {
+                case "chrome":
+                    driver = new ChromeDriver();
+                    break;
+                case "firefox":
+                    driver = new FirefoxDriver();
+                    break;
+                case "edge":
+                    driver = new EdgeDriver();
+                    break;
+                default:
+                    System.out.println("Invalid browser specified.");
+                    return;
+            }
+        } else {
+            System.out.println("Invalid execution_env in config.properties.");
+            return;
+        }
+
+        // Common driver setup
+        driver.manage().deleteAllCookies();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        driver.get(appUrl);
+        driver.manage().window().maximize();
+    }
+
+    @AfterClass(groups = {"Sanity", "Regression", "master"})
+    public void tearDown() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+
+    // Utility methods
     public String randomeString() {
-		// TODO Auto-generated method stub
-		String generatedstring = RandomStringUtils.randomAlphabetic(5);
-    	return generatedstring;
-		
-	}
-	public String randomeNumber() {
-		// TODO Auto-generated method stub
-		String generatednum = RandomStringUtils.randomNumeric(10);
-    	return generatednum;
-		
-	}
-	public String randomeAlpaNumeric() {
-		// TODO Auto-generated method stub
-		String generatedstring = RandomStringUtils.randomAlphabetic(4);
-		String generatednum = RandomStringUtils.randomNumeric(4);
-    	return(generatedstring+"@"+generatednum);
-		
-	}
-	
-	public String captureScreen(String tname) throws IOException 
-	{
-		String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());// time stamp
-		
-		TakesScreenshot takesScreenshot = (TakesScreenshot)driver;
-		File sourceFile = takesScreenshot.getScreenshotAs(OutputType.FILE);
-		
-		String targetFilePath = System.getProperty("user.dir")+"\\screenshots\\"+tname+"_"+timeStamp + ".png";
-		File targetFile =new File(targetFilePath);
-		
-		sourceFile.renameTo(targetFile);
-		
-		return targetFilePath;
-		
-	}
-    
+        return RandomStringUtils.randomAlphabetic(5);
+    }
+
+    public String randomeNumber() {
+        return RandomStringUtils.randomNumeric(10);
+    }
+
+    public String randomeAlpaNumeric() {
+        return RandomStringUtils.randomAlphabetic(4) + "@" + RandomStringUtils.randomNumeric(4);
+    }
+
+    public String captureScreen(String tname) throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+        TakesScreenshot ts = (TakesScreenshot) driver;
+        File sourceFile = ts.getScreenshotAs(OutputType.FILE);
+        String targetPath = System.getProperty("user.dir") + "/screenshots/" + tname + "_" + timeStamp + ".png";
+        File targetFile = new File(targetPath);
+        sourceFile.renameTo(targetFile);
+        return targetPath;
+    }
 }
