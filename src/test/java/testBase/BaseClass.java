@@ -91,7 +91,8 @@ public class BaseClass {
             String gridUrl = p.getProperty("selenium_grid_url", "http://localhost:4444/wd/hub");
             System.out.println("Connecting to Selenium Grid at: " + gridUrl);
 
-            driver = new RemoteWebDriver(new URL(gridUrl), capabilities);
+            driver = new RemoteWebDriver(new URL(p.getProperty("remoteurl")), capabilities);
+
 
         } else if (execEnv.equals("local")) {
             // Run tests locally
